@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            background-image: url('https://thumbs.dreamstime.com/b/weather-forecast-background-climate-change-concept-weather-forecast-background-climate-change-concept-collage-sky-image-120764591.jpg');
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+       .weather-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 10px;
+        background:rgba(0,0,0,0.6);
+        background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIiYxqgaHkESbYJWqZTR6jDXozsQF-Ol3ZQXa0gWB4AW3HEb0mVYsCdMs&usqp=CAE&s');
+        box-shadow: 0 0 10px rgba(255, 14, 14, 0.936);
+    text-align: center;}
+
+    .btn{
+        background-color: #007bff;
+        color: rgb(221, 38, 132);
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+        background-color: #45f05c;
+    }
+    
+    h2 {
+        color: #ec148b;
+        font-weight: bold;
+        
+    }
+    
+    marquee {
+        color: #fff;
+        font-size: 20px;
+    }
+    
+    #result {
+        margin-top: 20px;
+        color: hsla(241, 92%, 51%, 0.97);
+        font-size: 25px;
+        font-style: italic;
+
+    }
+    
+    @media (max-width: 768px) {
+       .weather-card {
+            width: 100%;
+            max-width: none;
+        }
+    }
+    
+    @media (max-width: 576px) {
+       .weather-card {
+            padding: 10px;
+        }
+    }
+    
+    @media (max-width: 320px) {
+       .weather-card {
+            padding: 5px;
+        }
+    }
+    
+    
+
+    </style>
+</head>
+<body>
+    <div class="weather-card">
+        <h2 class="text-primary">☁️Weather App</h2>
+        <marquee behavior="right" direction="">Welcome to Jayden's weather update</marquee>
+        <input type="text" id="city" class="form-control" placeholder="Enter city name">
+        <button class="btn btn-primary mt-3 w-100 " onclick="getWeather()">Get Weather</button>
+         <div id="result" class="mt-4"></div>
+         <marquee behavior="right" direction="">Thanks for using our services...please your feedback is very important...</marquee>
+        
+    </div>
+    <script>
+    async function getWeather() {
+        // Replace YOUR_API_KEY with your actual OpenWeatherMap API key.
+                // You can get one from https://openweathermap.org/appid
+                // Note: This API key is for demonstration purposes only and should not be used in a production environment.
+                // Also, keep in mind that this API has a rate limit of 60 calls per minute.
+                // Make sure to handle the rate limit appropriately in your application.
+                let apiKey = '88b76a222740012e95155ae4fd59b698';
+        const cityInput = document.getElementById('city');
+        const resultDiv = document.getElementById('result');
+        const city = cityInput.value;
+        let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+        
+        if (city === '') {
+            resultDiv.innerHTML = '<p class="text-danger">Please enter a city name.</p>';
+            return;
+        }
+        
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            
+            if (data.cod === 404) {
+                resultDiv.innerHTML = '<p class="text-danger">City not found.</p>';
+                return;
+            }
+            
+            const temp = data.main.temp;
+            const description = data.weather[0].description;
+            const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+            
+            resultDiv.innerHTML = `
+                <h2 class="text-success">${data.name}, ${data.sys.country}</h2>
+                <img src="${icon}" alt="${description}">
+                <p>Temperature: ${temp}°C</p>
+                <p>Description: ${description}</p>
+                <p>Humidity: ${data.main.humidity}🌡️%</p>
+                <p>Wind Speed: ${data.wind.speed} m/s</p>
+                <p>Sunrise: ${new Date(data.sys.sunrise * 1000).toLocaleTimeString()}</p>
+                <p>Sunset: ${new Date(data.sys.sunset * 1000).toLocaleTimeString()}</p>
+                <p>Last updated: ${new Date(data.dt * 1000).toLocaleString()}</p>
+                
+               
+                
+               
+            `;
+        } catch (error) {
+            resultDiv.innerHTML = '<p class="text-danger">An error occurred while fetching the weather data.</p>';
+            console.error(error);
+        }
+        
+        cityInput.value = '';
+        cityInput.focus();
+        resultDiv.style.display = 'block';
+        setTimeout(() => {
+            resultDiv.style.display = 'none';
+        }, 60000);
+        
+    }
+    </script>
+</body>
+</html>
